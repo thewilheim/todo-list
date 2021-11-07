@@ -6,11 +6,11 @@ export default class Task {
         this.priority = priority;
     }
 
-    get dueDate() {
-        return this.dueDate;
-    }
+    // get dueDate() {
+    //     return this.dueDate;
+    // }
 
-    set dueDate(date) {
-        this.dueDate = date;
-    }
+    // set dueDate(date) {
+    //     this.dueDate = date;
+    // }
 }

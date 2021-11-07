@@ -5,11 +5,10 @@ export default class Todo {
     constructor(){
         this.projects = [];
         this.projects.push(new Project(`Today's task`));
-        this.projects.push(new Project(`Today's task`));
     }
 
     set createProject(project) {
-        this.projects.push(project);
+        this.projects.push(new Project(project));
         console.log(this.projects);
     }
 
