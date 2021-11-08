@@ -8,7 +8,7 @@ export default class Todo {
     }
 
     set createProject(project) {
-        this.projects.push(new Project(project));
+        this.projects.push(project);
         console.log(this.projects);
     }
 
