@@ -6,12 +6,10 @@ import { format, compareAsc, sub } from 'date-fns';
 const topBar = document.querySelector('.Header');
 const sideBar = document.querySelector('.Side-Bar');
 const mainContent = document.querySelector('.Main-Content');
-
 const todoList = new Todo();
 
-todoList.projects[0].addTask = new Task(`Harry`, `the lad`, ` tomorrow`, `high`);
-todoList.projects[0].addTask = new Task(`Barry`, `the lad`, ` tomorrow`, `high`);
-console.log(todoList.projects[0]);
+todoList.projects[0].addTask = new Task(`Re-watch Harry Potter`, `11/11/2021`,);
+todoList.projects[0].addTask = new Task(`Finish watching arcane`, `11/11/2021`);
 
 
 export default class UI {
@@ -20,7 +18,10 @@ export default class UI {
         UI.loadTop();
         UI.loadMainContent();
         UI.loadSide();
+        UI.initEventListener();
     }
+
+    // Main UI
 
     static loadTop() {
         const container = document.createElement('div');
@@ -92,6 +93,8 @@ export default class UI {
         UI.loadTaskForm();
     }
 
+    
+    // Project UI
 
     static loadProjectForm() {
         const projectModal = document.createElement('div');
@@ -142,6 +145,9 @@ export default class UI {
             const project = new Project(nameInput.value, projectDesc.value);
             UI.createProject(project);
 
+            // loads the project when submited
+            UI.loadProject(project);
+
             // remove the modal
             projectModal.style.display = 'none';
 
@@ -159,37 +165,35 @@ export default class UI {
 
         const parent = document.querySelector('.projects');
 
-        const card = document.createElement('div');
-        card.classList.add('card');
+        UI.addCard(project.name, parent);
+    }
 
-        const cardTitle = document.createElement('h1');
+    static loadProject(project) {
+        const headerTitle = document.querySelector('.headerTitle');
+        const activeTasks = document.querySelector('.activeTasks');
+        const taskBox = document.querySelector('.taskBox');
 
-        cardTitle.innerText = project.name;
+        if(project.task.length > 0) {
 
+            taskBox.innerHTML = ``;
+            project.task.forEach((task) => {
+                UI.addTaskCard(task.title);
+            });
+        } else {
+            taskBox.innerHTML = ``;
+        }
 
-        card.appendChild(cardTitle);
-        parent.appendChild(card);
+            let numberOfTask = project.task.length;
+            activeTasks.innerText = `${numberOfTask} Active Tasks`;
+            headerTitle.innerHTML = project.name;
+            
     }
 
     static addCard(title, parent) {
-        const card = document.createElement('div');
-        card.classList.add('card');
-        const cardTitle = document.createElement('h1');
-        cardTitle.innerText = title;
-        card.appendChild(cardTitle);
-        parent.appendChild(card);
-
-    }
-
-
-    static addTaskCard(title, dueDate) {
-        const parent = document.querySelector('.taskBox');
-        const card = document.createElement('div');
-        card.classList.add('taskCard');
-        const cardTitle = document.createElement('h1');
-        cardTitle.innerText = title;
-        card.appendChild(cardTitle);
-
+        const card = document.createElement('button');
+        card.classList.add('projectCardBtn');
+        card.setAttribute('id','projectCard');
+        card.innerText = title;
         parent.appendChild(card);
 
     }
@@ -206,7 +210,7 @@ export default class UI {
 
             project.task.forEach((task) => {
 
-                UI.addTaskCard(task.title);
+                UI.addTaskCard(task.title,task.dueDate);
 
             });
 
@@ -219,12 +223,37 @@ export default class UI {
         });
     }
 
-    static loadTask(project) {
- 
+
+
+    // Task UI
+
+    static addTaskCard(title, dueDate) {
+        const parent = document.querySelector('.taskBox');
+        const card = document.createElement('div');
+
+        card.classList.add('taskCard');
+        const cardTitle = document.createElement('h1');
+        cardTitle.innerText = title;
+
+        const taskDate = document.createElement('h1');
+        taskDate.innerText = dueDate;
+
+
+        card.appendChild(cardTitle);
+        card.appendChild(taskDate);
+        parent.appendChild(card);
+
     }
 
-    static createTask(task) {
 
+    static createTask(task) {
+        const projectName = document.querySelector('.headerTitle');
+
+        todoList.projects.forEach((project) => {
+            if(projectName.innerText === project.name) {
+                project.addTask = task;
+            }
+        })
     }
 
     static loadTaskForm() {
@@ -238,7 +267,7 @@ export default class UI {
 
         const nameLabel = document.createElement('label');
         nameLabel.setAttribute('for', 'name');
-        nameLabel.innerText = `Task Title`;
+        nameLabel.innerText = `Project Title`;
         taskForm.appendChild(nameLabel);
 
         const nameInput = document.createElement('input');
@@ -276,6 +305,8 @@ export default class UI {
             const task = new Task(nameInput.value, taskDueDate.value);
             UI.createTask(task);
 
+            UI.addTaskCard(task.title, task.dueDate);
+
             // remove the modal
             taskModal.style.display = 'none';
 
@@ -300,11 +331,30 @@ export default class UI {
 
         modal.style.display = "block";
 
-        window.onclick = function (event) {
+        window.onclick =  (event) => {
             if (event.target === modal) {
                 modal.style.display = "none";
               }
         }
+
+    }
+
+    // Event Listeners
+
+    static initEventListener() {
+
+        // event listener to load the correct project
+        document.addEventListener('click', (e) => {
+            if(e.target.classList.contains('projectCardBtn')) {
+
+                todoList.projects.forEach((project) => {
+                    if(project.name === e.target.innerText) {
+                        UI.loadProject(project);
+                    }
+                });
+
+            }
+        })
 
     }
 

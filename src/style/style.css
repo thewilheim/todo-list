@@ -65,13 +65,23 @@ h1 {
   margin-bottom: 2rem;
 }
 
-.card {
+.projectCardBtn {
+  width: 90%;
   margin-bottom: 2rem;
   padding: 1rem;
+  font-size: 2rem;
   color: white;
   border-radius: 0.2rem;
   background-color: #585869;
   box-shadow: 3px 3px 2px #00000057;
+  border: none;
+}
+
+.projectCardBtn:active,
+#projectBtn:active,
+#taskBtn:active {
+  transform: scale(0.98);
+  box-shadow: 0px 0px 0px #00000057;
 }
 
 .card:hover {
@@ -79,19 +89,21 @@ h1 {
 }
 
 #projectBtn {
+  align-self: end;
   width: 12rem;
   padding: 1rem;
+  margin-right: 10%;
   font-size: 1.6em;
-  background-color: #585869;
+  background-color: #58586900;
   color: white;
   border: none;
   border-radius: 0.2rem;
-  box-shadow: 3px 3px 2px #00000057;
   font-weight: bold;
 }
 
 #projectBtn:hover,
-#taskBtn:hover {
+#taskBtn:hover,
+.projectCardBtn:hover {
   background-color: #77778f;
 }
 
@@ -139,8 +151,10 @@ h1 {
 }
 
 .taskCard {
+  display: flex;
+  justify-content: space-between;
   margin-bottom: 2rem;
-  padding: 1rem;
+  padding: 2rem;
   color: white;
   border-radius: 0.2rem;
   background-color: #585869;
