@@ -1,7 +1,7 @@
 import Task from "./Task";
 import Project from "./Project";
 import Todo from "./Todo";
-import { format, compareAsc, sub } from 'date-fns';
+import { format } from 'date-fns';
 
 const topBar = document.querySelector('.Header');
 const sideBar = document.querySelector('.Side-Bar');
@@ -28,10 +28,9 @@ export default class UI {
         container.classList.add('topBar');
 
         const currentDate = document.createElement('p');
-        currentDate.innerText = 'Monday 11 April';
+        currentDate.innerText = `${format(new Date(), 'EEEE')} ${format(new Date(), 'do')} ${format(new Date(), 'MMMM')}`;
 
         const taskActive = document.createElement('p')
-        taskActive.innerText = '3 Active Tasks'
         taskActive.classList.add('activeTasks');
 
         container.appendChild(currentDate);
@@ -115,6 +114,7 @@ export default class UI {
         nameInput.setAttribute('id','name');
         nameInput.setAttribute('name','projectTitle');
         nameInput.setAttribute('placeHolder','Enter a project name...');
+        nameInput.required = true;
         projectForm.appendChild(nameInput);
 
         const descLabel = document.createElement('label');
@@ -127,11 +127,12 @@ export default class UI {
         projectDesc.setAttribute('id','desc');
         projectDesc.setAttribute('name','projectDesc');
         projectDesc.setAttribute('placeHolder','Enter a project description...');
+        projectDesc.required = true;
         projectForm.appendChild(projectDesc);
 
         const submitForm = document.createElement('input');
         submitForm.setAttribute('type','submit');
-        submitForm.setAttribute('value','submit');
+        submitForm.setAttribute('value','Submit');
         projectForm.appendChild(submitForm);
 
 
@@ -177,7 +178,7 @@ export default class UI {
 
             taskBox.innerHTML = ``;
             project.task.forEach((task) => {
-                UI.addTaskCard(task.title);
+                UI.addTaskCard(task.title, task.dueDate);
             });
         } else {
             taskBox.innerHTML = ``;
@@ -194,6 +195,13 @@ export default class UI {
         card.classList.add('projectCardBtn');
         card.setAttribute('id','projectCard');
         card.innerText = title;
+
+        const deleteIcon = document.createElement('div');
+        deleteIcon.classList.add('deleteIcon');
+        deleteIcon.innerHTML = `<i class="far fa-trash-alt" class="deleteIcon"></i>`;
+
+
+        card.appendChild(deleteIcon);
         parent.appendChild(card);
 
     }
@@ -232,15 +240,23 @@ export default class UI {
         const card = document.createElement('div');
 
         card.classList.add('taskCard');
+
+        const leftGrp = document.createElement('div');
+        leftGrp.classList.add('titleName')
+
         const cardTitle = document.createElement('h1');
         cardTitle.innerText = title;
+        leftGrp.appendChild(cardTitle);
 
+        const rightGrp = document.createElement('div');
         const taskDate = document.createElement('h1');
         taskDate.innerText = dueDate;
+        rightGrp.appendChild(taskDate)
+        rightGrp.innerHTML += `<i class="far fa-trash-alt"></i>`;
 
 
-        card.appendChild(cardTitle);
-        card.appendChild(taskDate);
+        card.appendChild(leftGrp);
+        card.appendChild(rightGrp);
         parent.appendChild(card);
 
     }
@@ -275,6 +291,7 @@ export default class UI {
         nameInput.setAttribute('id','name');
         nameInput.setAttribute('name','projectTitle');
         nameInput.setAttribute('placeHolder','Enter a task name...');
+        nameInput.required = true;
         taskForm.appendChild(nameInput);
 
         const dateLabel = document.createElement('label');
@@ -286,12 +303,13 @@ export default class UI {
         taskDueDate.setAttribute('type','date');
         taskDueDate.setAttribute('id','date');
         taskDueDate.setAttribute('name','taskDueDate');
-        taskDueDate.setAttribute('value','2021-04-11');
+        taskDueDate.setAttribute('value','dd/MM/yyyy');
+        taskDueDate.required = true;
         taskForm.appendChild(taskDueDate);
 
         const submitForm = document.createElement('input');
         submitForm.setAttribute('type','submit');
-        submitForm.setAttribute('value','submit');
+        submitForm.setAttribute('value','Submit');
         taskForm.appendChild(submitForm);
 
 
@@ -339,6 +357,51 @@ export default class UI {
 
     }
 
+    static deleteItems(element) {
+
+        if(element.classList.contains('taskCard')){
+
+            const taskName = element.querySelector('.titleName');
+
+            todoList.projects.forEach((project) => {
+
+                project.task.forEach((task) => {
+
+                    if(task.title === taskName.innerText) {
+
+                        project.task.splice(project.task.indexOf(task), 1);
+                        element.remove();
+
+                        console.log(project.task);
+
+                    }
+                });
+
+            });
+
+        } else if (element.classList.contains('projectCardBtn')){
+
+            todoList.projects.forEach((project) => {
+
+                if(project.name === element.innerText && todoList.projects.length > 1) {
+
+                    todoList.projects.splice(todoList.projects.indexOf(project), 1)
+                    
+                    element.remove();
+
+                    console.log(todoList.projects);
+                    
+                }
+            });
+
+        } else {
+
+            console.error('Not able to delete this item');
+
+        }
+
+    }
+
     // Event Listeners
 
     static initEventListener() {
@@ -354,14 +417,16 @@ export default class UI {
                 });
 
             }
-        })
+        });
+        
+
+        document.addEventListener('click', (e) => {
+            if(e.target.classList.contains('fa-trash-alt')){
+                UI.deleteItems(e.target.parentElement.parentElement);
+            }
+        });
 
     }
-
-
-
-
-
 
 
 }

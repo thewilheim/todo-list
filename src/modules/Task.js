@@ -1,15 +1,10 @@
+import { format } from 'date-fns';
+
 export default class Task {
     constructor(title, dueDate, priority){
         this.title = title;
-        this.dueDate = dueDate;
+        this.dueDate = format(new Date(dueDate), 'dd/MM/yyyy');
         this.priority = priority;
     }
 
-    // get dueDate() {
-    //     return this.dueDate;
-    // }
-
-    // set dueDate(date) {
-    //     this.dueDate = date;
-    // }
 }
